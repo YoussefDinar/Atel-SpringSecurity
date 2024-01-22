@@ -1,20 +1,22 @@
 package com.example.Springsecv2.utils;
 
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+
 import java.security.Key;
 import java.util.Collection;
 import java.util.Date;
+
 @Service
 public class JwtUtil {
     private static final int expireInMs = 300 * 1000;
     private final static Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
     public String generate(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -24,28 +26,27 @@ public class JwtUtil {
                 .signWith(key)
                 .compact();
     }
+
     public boolean validate(String token) {
         if (getUsername(token) != null && isExpired(token)) {
             return true;
         }
         return false;
     }
+
     public String getUsername(String token) {
         Claims claims = getClaims(token);
         return claims.getSubject();
     }
+
     public boolean isExpired(String token) {
         Claims claims = getClaims(token);
         return claims.getExpiration().after(new Date(System.currentTimeMillis()));
     }
+
     private Claims getClaims(String token) {
         return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
     }
-
-
-
-
-
 
 
 }
